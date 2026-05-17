@@ -138,14 +138,25 @@
 
     <p>All net profits go directly to United for Malaria 🌍</p>
   </footer>
-  <script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const app = initializeApp({
+      apiKey: 'AIzaSyAcXiyBekSs2QfFPmaFcyqyxdmlWD9TUNo',
+      authDomain: 'a4a27-32769.firebaseapp.com',
+      projectId: 'a4a27-32769',
+      storageBucket: 'a4a27-32769.firebasestorage.app',
+      messagingSenderId: '763840052465',
+      appId: '1:763840052465:web:1960466af80ebbaa34fd50'
+    });
+    const db = getFirestore(app);
+
     let carouselIndex = 0, carouselTimer;
 
-    function buildCarousel() {
-      const images = JSON.parse(localStorage.getItem('a4a_banner') || '[]');
+    function buildCarousel(images) {
       const wrap = document.getElementById('carouselWrap');
       const dots = document.getElementById('carouselDots');
-      // remove old slides
       wrap.querySelectorAll('.carousel-slide').forEach(s => s.remove());
       dots.innerHTML = '';
       const prevBtn = wrap.querySelector('.prev');
@@ -185,11 +196,11 @@
       if (dotEls[carouselIndex]) dotEls[carouselIndex].classList.add('active');
     }
 
-    function carouselMove(dir) {
-      const slides = document.querySelectorAll('.carousel-slide');
-      goTo(carouselIndex + dir);
-    }
+    window.carouselMove = function(dir) { goTo(carouselIndex + dir); };
 
-    buildCarousel();
+    const snap = await getDocs(collection(db, 'banner'));
+    const images = [];
+    snap.forEach(d => images.push(d.data().src));
+    buildCarousel(images);
   </script>
 </html>
