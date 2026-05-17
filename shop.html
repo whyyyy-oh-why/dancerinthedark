@@ -121,8 +121,11 @@
    
     <p>All net profits go directly to United for Malaria 🌍</p>
   </footer>
-  <script>
-    function submitOrder() {
+  <script type="module">
+    import { db } from './firebase.js';
+    import { collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    window.submitOrder = async function() {
       const name = document.getElementById('orderName').value.trim();
       const items = [];
       if (document.getElementById('chkIce').checked) items.push('Ice Cream ($2.00)');
@@ -134,9 +137,7 @@
         err.style.display = 'block'; return;
       }
       err.style.display = 'none';
-      const orders = JSON.parse(localStorage.getItem('a4a_orders') || '[]');
-      orders.push({ name, items, time: new Date().toLocaleString() });
-      localStorage.setItem('a4a_orders', JSON.stringify(orders));
+      await addDoc(collection(db, 'orders'), { name, items, time: new Date().toLocaleString() });
       document.getElementById('orderNote').textContent = '✓ Order submitted! See you Friday.';
       document.getElementById('orderNote').style.color = '#4aada0';
       document.getElementById('orderName').value = '';

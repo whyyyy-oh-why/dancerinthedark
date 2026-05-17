@@ -101,8 +101,11 @@
 
     <p>All net profits go directly to United for Malaria 🌍</p>
   </footer>
-  <script>
-    function submitApp() {
+  <script type="module">
+    import { db } from './firebase.js';
+    import { collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    window.submitApp = async function() {
       const first = document.getElementById('appFirst').value.trim();
       const last = document.getElementById('appLast').value.trim();
       const teacher = document.getElementById('appTeacher').value.trim();
@@ -111,9 +114,7 @@
         err.textContent = 'Please fill in all fields.'; err.style.display = 'block'; return;
       }
       err.style.display = 'none';
-      const apps = JSON.parse(localStorage.getItem('a4a_apps') || '[]');
-      apps.push({ first, last, teacher, time: new Date().toLocaleString() });
-      localStorage.setItem('a4a_apps', JSON.stringify(apps));
+      await addDoc(collection(db, 'applications'), { first, last, teacher, time: new Date().toLocaleString() });
       document.getElementById('appNote').textContent = '✓ Application submitted!';
       document.getElementById('appNote').style.color = '#4aada0';
       document.getElementById('appFirst').value = '';
