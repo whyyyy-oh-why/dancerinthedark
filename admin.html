@@ -275,14 +275,22 @@
       await loadOfficerList();
     };
 
-    window.handleNewPfp = function(file) {
+    async function uploadToCloudinary(file) {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', 'v5kf13j9');
+      const res = await fetch('https://api.cloudinary.com/v1_1/day8zvxoe/image/upload', { method: 'POST', body: fd });
+      const data = await res.json();
+      return data.secure_url;
+    }
+
+    window.handleNewPfp = async function(file) {
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        newPfpData = e.target.result;
-        document.getElementById('newPfpPreview').innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-      };
-      reader.readAsDataURL(file);
+      const preview = document.getElementById('newPfpPreview');
+      preview.innerHTML = '⏳';
+      const url = await uploadToCloudinary(file);
+      newPfpData = url;
+      preview.innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
     };
 
     // ── Banner ────────────────────────────────────────────
@@ -302,15 +310,12 @@
     }
     window.loadBannerPreview = loadBannerPreview;
 
-    window.handleBannerFiles = function(files) {
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = async e => {
-          await addDoc(collection(db, 'banner'), { src: e.target.result });
-          loadBannerPreview();
-        };
-        reader.readAsDataURL(file);
-      });
+    window.handleBannerFiles = async function(files) {
+      for (const file of Array.from(files)) {
+        const url = await uploadToCloudinary(file);
+        await addDoc(collection(db, 'banner'), { src: url });
+      }
+      loadBannerPreview();
     };
 
     window.removeBannerImage = async function(id) {
