@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A4A – Meet the Potatoes</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .officer-card {
+      background: #fff;
+      border: 1.5px solid #c8e6e3;
+      border-radius: 16px;
+      padding: 28px 20px;
+      text-align: center;
+    }
+    .officer-card .avatar {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: #d0eeeb;
+      margin: 0 auto 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+      border: 3px solid #4aada0;
+    }
+    .officer-card h3 { font-size: 1.05rem; margin-bottom: 4px; }
+    .officer-card .role { color: #4aada0; font-size: 0.75rem; font-family: sans-serif; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+    .officer-card p { font-size: 0.88rem; color: #666; font-family: sans-serif; line-height: 1.5; }
+    .role-card {
+      background: #fff;
+      border: 1.5px solid #c8e6e3;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+    .role-card .icon { font-size: 2rem; margin-bottom: 10px; }
+    .role-card h3 { font-size: 1rem; margin-bottom: 6px; }
+    .role-card p { font-size: 0.85rem; color: #666; font-family: sans-serif; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo"><span>A4A</span> Sweet Impact</div>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">The Shop</a></li>
+      <li><a href="join.html">Join the Team</a></li>
+      <li><a href="potatoes.html" class="active">Meet the Officers</a></li>
+      <li><a href="impact.html">Our Impact</a></li>
+      <li><a href="admin.html" class="nav-admin">Admin</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="badge"> MEET THE OFFICERS</div>
+    <h1>The <span>Officer Team</span></h1>
+    <p class="subtitle">The dedicated (and slightly ridiculous) Officers keeping A4A running every Friday.</p>
+
+    <div id="officerGrid" style="display:flex;flex-wrap:wrap;gap:20px;margin-top:32px;justify-content:center;"></div>
+
+    <div style="margin-top:56px;">
+      <h2>Standard Sale Roles</h2>
+      <p class="subtitle" style="margin:12px 0 28px;">Every member plays a part in making each Friday sale a success.</p>
+      <div class="card-grid">
+        <div class="role-card">
+          <div class="icon">🛡️</div>
+          <h3>Table Guard</h3>
+          <p>Keeps the table organized and manages the line of customers.</p>
+        </div>
+        <div class="role-card">
+          <div class="icon">🍦</div>
+          <h3>Ice Cream Server</h3>
+          <p>Hands out ice cream and ensures every customer gets their order.</p>
+        </div>
+        <div class="role-card">
+          <div class="icon">🤹</div>
+          <h3>Crowd Engagement</h3>
+          <p>Attracts customers and spreads the word about A4A's mission.</p>
+        </div>
+        <div class="role-card">
+          <div class="icon">📊</div>
+          <h3>Sales Tracker</h3>
+          <p>Counts sales and keeps a tally for the treasurer's records.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-title">America 4 Africa</div>
+    <p>Every Friday · 3:25 PM · Outside the Cafeteria · $2 Ice Cream for a Cause</p>
+   
+    <p>All net profits go directly to United for Malaria 🌍</p>
+  </footer>
+  <script>
+    const DEFAULT_OFFICERS = [
+      { emoji: '👩', name: 'Niti Pagare', role: 'President', desc: 'Oversees roles, helps with tables, and makes sure the ice cream actually shows up.' },
+      { emoji: '👩', name: 'Eirene Hong', role: 'Vice President', desc: 'Manages volunteer placement and table setup so everything runs smoothly.' },
+      { emoji: '👩', name: 'Kate Li', role: 'Treasurer', desc: 'Tracks all money made and manages donations to United for Malaria.' },
+      { emoji: '👦', name: 'Woobin Choi', role: 'Historian', desc: 'Records the sales through photos and videos — the official A4A content creator.' }
+    ];
+
+    function getOfficers() {
+      try {
+        const stored = localStorage.getItem('a4a_officers');
+        if (stored) {
+          const arr = JSON.parse(stored);
+          if (Array.isArray(arr) && arr.length > 0) return arr;
+        }
+      } catch(e) {}
+      return DEFAULT_OFFICERS;
+    }
+
+    function renderOfficers() {
+      const officers = getOfficers();
+      const grid = document.getElementById('officerGrid');
+      grid.innerHTML = officers.map(o => {
+        const avatar = o.photo
+          ? '<img src="' + o.photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+          : (o.emoji || '👤');
+        return '<div class="officer-card" style="flex:1 1 200px;max-width:260px;">' +
+          '<div class="avatar">' + avatar + '</div>' +
+          '<h3>' + o.name + '</h3>' +
+          '<div class="role">' + o.role + '</div>' +
+          '<p>' + o.desc + '</p>' +
+          '</div>';
+      }).join('');
+    }
+
+    renderOfficers();
+  </script>
+</body>
+</html>

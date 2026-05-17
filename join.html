@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A4A – Join the Team</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .rule-item { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; font-family: sans-serif; font-size: 0.95rem; }
+    .rule-num {
+      min-width: 28px; height: 28px;
+      background: #4aada0; color: #fff;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: bold;
+    }
+    .rule-warn { background: #f0a500; }
+    .perk-card { background: #4aada0; color: #fff; border-radius: 16px; padding: 32px; text-align: center; }
+    .perk-card .icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .perk-card h3 { font-size: 1.3rem; margin-bottom: 10px; }
+    .perk-card p { font-size: 0.95rem; line-height: 1.6; opacity: 0.9; }
+    .perk-card .note { font-size: 0.8rem; opacity: 0.7; margin-top: 12px; }
+    .order-form { background: #fff; border: 1.5px solid #c8e6e3; border-radius: 16px; padding: 28px; }
+    .order-form h3 { font-size: 1.1rem; margin-bottom: 6px; color: #4aada0; }
+    .order-form p { font-size: 0.85rem; color: #666; font-family: sans-serif; margin-bottom: 20px; }
+    label { display: block; font-size: 0.75rem; font-family: sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: #555; margin-bottom: 6px; margin-top: 16px; }
+    input[type=text], select { width: 100%; padding: 12px 14px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 0.95rem; font-family: sans-serif; background: #fafafa; }
+    .submit-note { text-align: center; font-size: 0.8rem; color: #999; font-family: sans-serif; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo"><span>A4A</span> Sweet Impact</div>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">The Shop</a></li>
+      <li><a href="join.html" class="active">Join the Team</a></li>
+      <li><a href="potatoes.html">Meet the Officers</a></li>
+      <li><a href="impact.html">Our Impact</a></li>
+      <li><a href="admin.html" class="nav-admin">Admin</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="badge">🤝 JOIN THE TEAM</div>
+    <h1>Member <span>Corner</span></h1>
+    <p class="subtitle">Apply below to join the team and help out at our Friday sales!</p>
+
+    <div class="two-col" style="margin-top:40px;">
+      <div class="card">
+        <h2>📋 Sale Day Rules</h2>
+        <br>
+        <div class="rule-item">
+          <div class="rule-num">1</div>
+          <p>Request release from 7th period at <strong>3:25 PM</strong>.</p>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">2</div>
+          <p>Report directly to the <strong>cafeteria couches</strong> upon release.</p>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">3</div>
+          <p><strong>No yelling or horseplay</strong> at the tables — keep it professional!</p>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num rule-warn">⚠</div>
+          <p>Missing a signed-up sale results in a <strong>one-sale suspension</strong>. Don't ghost us!</p>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div class="perk-card">
+          <div class="icon">🍦</div>
+          <h3>Member Perk!</h3>
+          <p>Members helping with the sale get <strong>one free ice cream</strong> if there are extras at the end. Your reward for saving lives!</p>
+          <p class="note">Subject to availability — first come, first served among helpers!</p>
+        </div>
+
+        <div class="order-form">
+          <h3>🐱 Apply to Join the Next Sale</h3>
+          <p>You have to join the schoology group to see the sale list (code found at Mr.Cardidi's room)</p>
+
+          <label>FIRST NAME</label>
+          <input type="text" id="appFirst" placeholder="First name">
+          <label>LAST NAME</label>
+          <input type="text" id="appLast" placeholder="Last name">
+          <label>7TH PERIOD TEACHER</label>
+          <input type="text" id="appTeacher" placeholder="Teacher's last name">
+
+          <div id="appError" style="color:#e05;font-family:sans-serif;font-size:0.85rem;margin-top:10px;display:none;"></div>
+          <button onclick="submitApp()" class="btn btn-teal" style="margin-top:20px;">Apply Now →</button>
+          <p class="submit-note" id="appNote">Your application goes directly to the A4A admin.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-title">America 4 Africa</div>
+    <p>Every Friday · 3:25 PM · Outside the Cafeteria · $2 Ice Cream for a Cause</p>
+
+    <p>All net profits go directly to United for Malaria 🌍</p>
+  </footer>
+  <script>
+    function submitApp() {
+      const first = document.getElementById('appFirst').value.trim();
+      const last = document.getElementById('appLast').value.trim();
+      const teacher = document.getElementById('appTeacher').value.trim();
+      const err = document.getElementById('appError');
+      if (!first || !last || !teacher) {
+        err.textContent = 'Please fill in all fields.'; err.style.display = 'block'; return;
+      }
+      err.style.display = 'none';
+      const apps = JSON.parse(localStorage.getItem('a4a_apps') || '[]');
+      apps.push({ first, last, teacher, time: new Date().toLocaleString() });
+      localStorage.setItem('a4a_apps', JSON.stringify(apps));
+      document.getElementById('appNote').textContent = '✓ Application submitted!';
+      document.getElementById('appNote').style.color = '#4aada0';
+      document.getElementById('appFirst').value = '';
+      document.getElementById('appLast').value = '';
+      document.getElementById('appTeacher').value = '';
+    }
+  </script>
+</body>
+</html>
