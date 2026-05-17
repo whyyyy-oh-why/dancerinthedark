@@ -253,7 +253,6 @@
     }
 
     function deleteOfficer(i) {
-      if (!confirm('Delete this officer?')) return;
       const officers = getOfficers();
       officers.splice(i, 1);
       localStorage.setItem('a4a_officers', JSON.stringify(officers));
@@ -312,7 +311,7 @@
     }
 
     function clearApps() {
-      if (confirm('Clear all applications?')) { localStorage.removeItem('a4a_apps'); loadApps(); }
+      localStorage.removeItem('a4a_apps'); loadApps();
     }
 
     // ── Orders ────────────────────────────────────────────
@@ -330,7 +329,7 @@
     }
 
     function clearOrders() {
-      if (confirm('Clear all pre-orders?')) { localStorage.removeItem('a4a_orders'); loadOrders(); }
+      localStorage.removeItem('a4a_orders'); loadOrders();
     }
 
     if (sessionStorage.getItem('a4aAdmin') === '1') showPanel();
