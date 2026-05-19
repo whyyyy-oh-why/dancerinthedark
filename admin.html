@@ -139,7 +139,13 @@
             <button class="btn-sm btn-teal" onclick="loadNextSale()">Refresh</button>
             <button class="btn-sm" style="background:#fdecea;color:#c0392b;" onclick="clearNextSale()">Clear Roster</button>
           </div>
-          <div id="nextSaleList" style="font-family:sans-serif;font-size:0.9rem;"></div>
+          <div style="display:flex;gap:20px;align-items:flex-start;">
+            <div id="nextSaleList" style="font-family:sans-serif;font-size:0.9rem;flex:1;"></div>
+            <div style="min-width:220px;background:#f0faf9;border:1.5px solid #c8e6e3;border-radius:12px;padding:16px;font-family:sans-serif;">
+              <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;color:#4aada0;font-weight:700;margin-bottom:10px;">📧 Teacher Emails</div>
+              <div id="teacherEmailList" style="font-size:0.85rem;color:#333;"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -363,10 +369,16 @@
       const snap = await getDocs(collection(db, 'nextSale'));
       const el = document.getElementById('nextSaleList');
       if (!el) return;
-      if (snap.empty) { el.innerHTML = '<p style="color:#999;">No one approved yet.</p>'; return; }
+      if (snap.empty) {
+        el.innerHTML = '<p style="color:#999;">No one approved yet.</p>';
+        document.getElementById('teacherEmailList').innerHTML = '<p style="color:#999;">None yet.</p>';
+        return;
+      }
       let i = 0; el.innerHTML = '';
+      const emails = [];
       snap.forEach(d => {
         const a = d.data();
+        if (a.teacherEmail) emails.push({ name: a.teacher, email: a.teacherEmail });
         el.innerHTML += '<div style="border:1.5px solid #c8e6e3;border-radius:10px;padding:12px 16px;margin-bottom:10px;background:#f0faf9;">'
           + '<strong>#' + (++i) + ' ' + a.first + ' ' + a.last + '</strong><br>'
           + '7th Period: <span style="color:#4aada0;">' + a.teacher + '</span>'
@@ -374,6 +386,10 @@
           + '<button onclick="removeFromSale(\'' + d.id + '\')" style="margin-top:6px;background:#fdecea;color:#c0392b;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:0.8rem;">Remove</button>'
           + '</div>';
       });
+      const emailEl = document.getElementById('teacherEmailList');
+      emailEl.innerHTML = emails.length === 0
+        ? '<p style="color:#999;">No emails on file.</p>'
+        : emails.map(e => '<div style="margin-bottom:8px;"><span style="color:#555;font-size:0.8rem;">' + e.name + '</span><br><a href="mailto:' + e.email + '" style="color:#4aada0;word-break:break-all;">' + e.email + '</a></div>').join('');
     }
     window.loadNextSale = loadNextSale;
 
