@@ -85,6 +85,8 @@
           <input type="text" id="appLast" placeholder="Last name">
           <label>7TH PERIOD TEACHER</label>
           <input type="text" id="appTeacher" placeholder="Teacher's last name">
+          <label>TEACHER'S EMAIL</label>
+          <input type="text" id="appTeacherEmail" placeholder="teacher@school.edu">
 
           <div id="appError" style="color:#e05;font-family:sans-serif;font-size:0.85rem;margin-top:10px;display:none;"></div>
           <button onclick="submitApp()" class="btn btn-teal" style="margin-top:20px;">Apply Now →</button>
@@ -109,17 +111,24 @@
       const first = document.getElementById('appFirst').value.trim();
       const last = document.getElementById('appLast').value.trim();
       const teacher = document.getElementById('appTeacher').value.trim();
+      const teacherEmail = document.getElementById('appTeacherEmail').value.trim();
       const err = document.getElementById('appError');
-      if (!first || !last || !teacher) {
+      if (!first || !last || !teacher || !teacherEmail) {
         err.textContent = 'Please fill in all fields.'; err.style.display = 'block'; return;
       }
       err.style.display = 'none';
-      await addDoc(collection(db, 'applications'), { first, last, teacher, time: new Date().toLocaleString() });
-      document.getElementById('appNote').textContent = '✓ Application submitted!';
-      document.getElementById('appNote').style.color = '#4aada0';
-      document.getElementById('appFirst').value = '';
-      document.getElementById('appLast').value = '';
-      document.getElementById('appTeacher').value = '';
+      try {
+        await addDoc(collection(db, 'applications'), { first, last, teacher, teacherEmail, time: new Date().toLocaleString() });
+        document.getElementById('appNote').textContent = '✓ Application submitted!';
+        document.getElementById('appNote').style.color = '#4aada0';
+        document.getElementById('appFirst').value = '';
+        document.getElementById('appLast').value = '';
+        document.getElementById('appTeacher').value = '';
+        document.getElementById('appTeacherEmail').value = '';
+      } catch(e) {
+        err.textContent = 'Error submitting: ' + e.message;
+        err.style.display = 'block';
+      }
     }
   </script>
 </body>

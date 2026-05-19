@@ -65,6 +65,7 @@
         <button class="admin-tab active" onclick="switchTab('officers',this)">👥 Officers</button>
         <button class="admin-tab" onclick="switchTab('banner',this)">🖼️ Banner</button>
         <button class="admin-tab" onclick="switchTab('apps',this)">📝 Applications</button>
+        <button class="admin-tab" onclick="switchTab('nextsale',this)">✅ Next Sale</button>
         <button class="admin-tab" onclick="switchTab('orders',this)">📋 Pre-Orders</button>
       </div>
 
@@ -128,6 +129,17 @@
             <button class="btn-sm" style="background:#fdecea;color:#c0392b;" onclick="clearApps()">Clear All</button>
           </div>
           <div id="appsList" style="font-family:sans-serif;font-size:0.9rem;"></div>
+        </div>
+      </div>
+
+      <div id="tab-nextsale" class="tab-content" style="display:none;">
+        <div class="admin-section">
+          <h3>✅ Next Sale Roster</h3>
+          <div style="display:flex;gap:10px;margin-bottom:16px;">
+            <button class="btn-sm btn-teal" onclick="loadNextSale()">Refresh</button>
+            <button class="btn-sm" style="background:#fdecea;color:#c0392b;" onclick="clearNextSale()">Clear Roster</button>
+          </div>
+          <div id="nextSaleList" style="font-family:sans-serif;font-size:0.9rem;"></div>
         </div>
       </div>
 
@@ -199,7 +211,7 @@
     async function showPanel() {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('adminPanel').style.display = 'block';
-      await Promise.all([loadOfficerList(), loadBannerPreview(), loadApps(), loadOrders()]);
+      await Promise.all([loadOfficerList(), loadBannerPreview(), loadApps(), loadOrders(), loadNextSale()]);
     }
 
     // ── Officers ──────────────────────────────────────────
@@ -333,11 +345,48 @@
         const a = d.data();
         el.innerHTML += '<div style="border:1.5px solid #e0e0e0;border-radius:10px;padding:12px 16px;margin-bottom:10px;">'
           + '<strong>#' + (++i) + ' ' + a.first + ' ' + a.last + '</strong><br>'
-          + '7th Period: <span style="color:#4aada0;">' + a.teacher + '</span><br>'
-          + '<span style="color:#aaa;font-size:0.8rem;">' + a.time + '</span></div>';
+          + '7th Period: <span style="color:#4aada0;">' + a.teacher + '</span>'
+          + (a.teacherEmail ? ' &mdash; <a href="mailto:' + a.teacherEmail + '" style="color:#4aada0;">' + a.teacherEmail + '</a>' : '') + '<br>'
+          + '<span style="color:#aaa;font-size:0.8rem;">' + a.time + '</span><br>'
+          + '<button class="btn-sm btn-teal" style="margin-top:8px;" onclick="approveApp(\'' + d.id + '\',\'' + a.first + '\',\'' + a.last + '\',\'' + (a.teacher||'') + '\',\'' + (a.teacherEmail||'') + '\')">✔ Add to Next Sale</button>'
+          + '</div>';
       });
     }
     window.loadApps = loadApps;
+
+    window.approveApp = async function(id, first, last, teacher, teacherEmail) {
+      await addDoc(collection(db, 'nextSale'), { first, last, teacher, teacherEmail, approved: new Date().toLocaleString() });
+      await loadApps();
+    };
+
+    async function loadNextSale() {
+      const snap = await getDocs(collection(db, 'nextSale'));
+      const el = document.getElementById('nextSaleList');
+      if (!el) return;
+      if (snap.empty) { el.innerHTML = '<p style="color:#999;">No one approved yet.</p>'; return; }
+      let i = 0; el.innerHTML = '';
+      snap.forEach(d => {
+        const a = d.data();
+        el.innerHTML += '<div style="border:1.5px solid #c8e6e3;border-radius:10px;padding:12px 16px;margin-bottom:10px;background:#f0faf9;">'
+          + '<strong>#' + (++i) + ' ' + a.first + ' ' + a.last + '</strong><br>'
+          + '7th Period: <span style="color:#4aada0;">' + a.teacher + '</span>'
+          + (a.teacherEmail ? ' &mdash; <a href="mailto:' + a.teacherEmail + '" style="color:#4aada0;">' + a.teacherEmail + '</a>' : '') + '<br>'
+          + '<button onclick="removeFromSale(\'' + d.id + '\')" style="margin-top:6px;background:#fdecea;color:#c0392b;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:0.8rem;">Remove</button>'
+          + '</div>';
+      });
+    }
+    window.loadNextSale = loadNextSale;
+
+    window.removeFromSale = async function(id) {
+      await deleteDoc(doc(db, 'nextSale', id));
+      loadNextSale();
+    };
+
+    window.clearNextSale = async function() {
+      const snap = await getDocs(collection(db, 'nextSale'));
+      await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
+      loadNextSale();
+    };
 
     window.clearApps = async function() {
       const snap = await getDocs(collection(db, 'applications'));
